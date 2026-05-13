@@ -3,20 +3,30 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Artisan Market API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product operations
+  - name: categories
+    description: Category operations
+  - name: artisans
+    description: Artisan operations
+  - name: orders
+    description: Order operations
+  - name: dashboard
+    description: Dashboard summary
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +34,320 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List all categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /artisans:
+    get:
+      operationId: listArtisans
+      tags: [artisans]
+      summary: List all artisans
+      responses:
+        "200":
+          description: List of artisans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artisan"
+    post:
+      operationId: createArtisan
+      tags: [artisans]
+      summary: Create an artisan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArtisanInput"
+      responses:
+        "201":
+          description: Artisan created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artisan"
+
+  /artisans/{id}:
+    get:
+      operationId: getArtisan
+      tags: [artisans]
+      summary: Get an artisan by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Artisan found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artisan"
+        "404":
+          description: Not found
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+        - name: artisanId
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/featured:
+    get:
+      operationId: listFeaturedProducts
+      tags: [products]
+      summary: List featured products
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /products/{id}/customizations:
+    get:
+      operationId: listProductCustomizations
+      tags: [products]
+      summary: Get customization options for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Customization options
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomizationOption"
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List all orders
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/recent:
+    get:
+      operationId: listRecentOrders
+      tags: [orders]
+      summary: Get recent order activity feed
+      responses:
+        "200":
+          description: Recent orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get an order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdate"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard summary stats
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +358,311 @@ components:
       required:
         - status
 
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: ["string", "null"]
+        productCount:
+          type: integer
+      required: [id, name, slug, productCount]
+
+    Artisan:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        bio:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        specialty:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        rating:
+          type: ["number", "null"]
+        totalOrders:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, name, totalOrders, createdAt]
+
+    ArtisanInput:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+        location:
+          type: string
+        specialty:
+          type: string
+        imageUrl:
+          type: string
+      required: [name]
+
+    CustomizationOption:
+      type: object
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [color, size, material, text, finish, style]
+        choices:
+          type: array
+          items:
+            type: string
+        required:
+          type: boolean
+        priceDelta:
+          type: ["number", "null"]
+      required: [id, productId, name, type, choices, required]
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        categoryId:
+          type: ["integer", "null"]
+        categoryName:
+          type: ["string", "null"]
+        artisanId:
+          type: ["integer", "null"]
+        artisanName:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        stock:
+          type: integer
+        featured:
+          type: boolean
+        leadTimeDays:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, name, price, stock, featured, leadTimeDays, createdAt]
+
+    ProductDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        categoryId:
+          type: ["integer", "null"]
+        categoryName:
+          type: ["string", "null"]
+        artisanId:
+          type: ["integer", "null"]
+        artisanName:
+          type: ["string", "null"]
+        artisanBio:
+          type: ["string", "null"]
+        artisanLocation:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        stock:
+          type: integer
+        featured:
+          type: boolean
+        leadTimeDays:
+          type: integer
+        customizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomizationOption"
+        createdAt:
+          type: string
+      required: [id, name, price, stock, featured, leadTimeDays, customizations, createdAt]
+
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        categoryId:
+          type: integer
+        artisanId:
+          type: integer
+        imageUrl:
+          type: string
+        stock:
+          type: integer
+        featured:
+          type: boolean
+        leadTimeDays:
+          type: integer
+      required: [name, price, stock]
+
+    ProductUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        featured:
+          type: boolean
+        leadTimeDays:
+          type: integer
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        orderId:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        customizations:
+          type: object
+          additionalProperties:
+            type: string
+      required: [id, orderId, productId, productName, quantity, unitPrice, customizations]
+
+    OrderItemInput:
+      type: object
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        customizations:
+          type: object
+          additionalProperties:
+            type: string
+      required: [productId, quantity, customizations]
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, in_production, shipped, delivered, cancelled]
+        totalAmount:
+          type: number
+        companyName:
+          type: ["string", "null"]
+        contactName:
+          type: string
+        contactEmail:
+          type: string
+        shippingAddress:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, status, totalAmount, contactName, contactEmail, items, createdAt, updatedAt]
+
+    OrderInput:
+      type: object
+      properties:
+        companyName:
+          type: string
+        contactName:
+          type: string
+        contactEmail:
+          type: string
+        shippingAddress:
+          type: string
+        notes:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItemInput"
+      required: [contactName, contactEmail, items]
+
+    OrderStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, in_production, shipped, delivered, cancelled]
+      required: [status]
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalProducts:
+          type: integer
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+        pendingOrders:
+          type: integer
+        inProductionOrders:
+          type: integer
+        topCategories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              count:
+                type: integer
+            required: [name, count]
+        recentOrdersCount:
+          type: integer
+      required:
+        - totalProducts
+        - totalOrders
+        - totalRevenue
+        - pendingOrders
+        - inProductionOrders
+        - topCategories
+        - recentOrdersCount
