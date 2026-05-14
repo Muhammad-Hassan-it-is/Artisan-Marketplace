@@ -1,6 +1,7 @@
 import { Link, useParams } from "wouter";
 import { motion } from "framer-motion";
 import { MapPin, Star, Package, ArrowLeft, Clock } from "lucide-react";
+import { FaUser } from "react-icons/fa";
 import { useGetArtisan, getGetArtisanQueryKey, useListProducts, getListProductsQueryKey } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -58,14 +59,8 @@ export default function ArtisanProfilePage() {
 
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <div className="flex flex-col sm:flex-row gap-6 items-start">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-muted ring-2 ring-border shrink-0">
-            {artisan.imageUrl ? (
-              <img src={artisan.imageUrl} alt={artisan.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center font-serif text-3xl text-muted-foreground">
-                {artisan.name[0]}
-              </div>
-            )}
+          <div className="w-24 h-24 rounded-full bg-muted ring-2 ring-border shrink-0 flex items-center justify-center">
+            <FaUser className="w-12 h-12 text-muted-foreground" />
           </div>
           <div className="flex-1">
             <h1 data-testid="text-artisan-name" className="font-serif text-3xl font-medium mb-1">{artisan.name}</h1>

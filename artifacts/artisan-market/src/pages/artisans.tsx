@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { MapPin, Star, Package } from "lucide-react";
+import { FaUser } from "react-icons/fa";
 import { useListArtisans } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -17,18 +18,8 @@ function ArtisanCard({ artisan, index }: { artisan: any; index: number }) {
           className="group bg-card border border-border rounded-sm p-5 hover:shadow-md hover:border-primary/30 transition-all duration-200 cursor-pointer"
         >
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full overflow-hidden bg-muted shrink-0 ring-2 ring-border group-hover:ring-primary/30 transition-all">
-              {artisan.imageUrl ? (
-                <img
-                  src={artisan.imageUrl}
-                  alt={artisan.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-lg font-serif text-muted-foreground">
-                  {artisan.name[0]}
-                </div>
-              )}
+            <div className="w-14 h-14 rounded-full bg-muted shrink-0 ring-2 ring-border group-hover:ring-primary/30 transition-all flex items-center justify-center">
+              <FaUser className="w-7 h-7 text-muted-foreground" />
             </div>
             <div className="flex-1 min-w-0">
               <h3
