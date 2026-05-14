@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import dummyRouter from "./routes/dummy-router";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -29,6 +30,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", router);
+const isDummy = !process.env.DATABASE_URL;
+if (isDummy) {
+  logger.warn("DATABASE_URL not set — running in dummy (in-memory) mode");
+  app.use("/api", dummyRouter);
+} else {
+  app.use("/api", router);
+}
 
 export default app;
